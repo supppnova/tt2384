@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Image Analysis</title>
+  <script>
+
+    function analyzeImage() {
+      const fileInput = document.getElementById("imageInput");
+      const file = fileInput.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          // Get the raw binary data (ArrayBuffer)
+          const binaryImageData = event.target.result;
+
+          // Send the binary image data to your Firebase Cloud Function
+          fetch('https://5001-idx-geminihkt-1720848122962.cluster-bec2e4635ng44w7ed22sa22hes.cloudworkstations.dev/hktfare/us-central1/analyzeImage', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/octet-stream' // Indicate binary data
+            },
+            // Send the binary data directly
+            body: binaryImageData
+          })
+            .then(response => response.json())
+            .then(data => {
+              console.log("Response from Cloud Function:", data);
+            })
+            .catch(error => {
+              console.error("Error:", error);
+            });
+        };
+
+        // Read the file as an ArrayBuffer (for binary data)
+        reader.readAsArrayBuffer(file);
+      }
+    }
+
+  </script>
+</head>
+
+<body>
+  <input type="file" id="imageInput" accept="image/*">
+  <button onclick="analyzeImage()">Analyze Image</button>
+
+  <div id="results">
+  </div>
+</body>
+
+</html>
